@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Services.Order.Data;
 using Services.Order.Models;
 using Services.Order.Models.Dto;
+using Services.Order.RabbitMQSender;
 
 namespace Services.Order.Controllers
 {
@@ -12,12 +14,16 @@ namespace Services.Order.Controllers
     {
         private readonly AppDbContext _db;
         private ResponseDto _response;
+        private readonly IConfiguration _configuration;
+        private readonly IRabbitMQOrderMessageSender _messageSender;
         private IMapper _mapper;
-        public OrderController(AppDbContext db, IMapper mapper)
+        public OrderController(AppDbContext db, IMapper mapper, IRabbitMQOrderMessageSender messageSender, IConfiguration configuration)
         {
             _db = db;
             _response = new ResponseDto();
             _mapper = mapper;
+            _messageSender = messageSender;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -54,38 +60,39 @@ namespace Services.Order.Controllers
         }
 
         [HttpPost]
-        public ResponseDto Post(OrdersDto ProductDto)
+        public ResponseDto Post(OrdersDto orderDto)
         {
             try
             {
-                Orders product = _mapper.Map<Orders>(ProductDto);
-                _db.Orders.Add(product);
+                Orders order = _mapper.Map<Orders>(orderDto);
+                _db.Orders.Add(order);
                 _db.SaveChanges();
 
 
-                _db.Orders.Update(product);
+                _db.Orders.Update(order);
                 _db.SaveChanges();
-                _response.Result = _mapper.Map<OrdersDto>(product);
+                _response.Result = _mapper.Map<OrdersDto>(order);
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
+            _messageSender.SendMessage(orderDto, _configuration.GetValue<string>("TopicAndQueueNames:AddOrderQueue"));
             return _response;
         }
 
 
         [HttpPut]
-        public ResponseDto Put(OrdersDto ProductDto)
+        public ResponseDto Put(OrdersDto orderDto)
         {
             try
             {
-                Orders product = _mapper.Map<Orders>(ProductDto);
-                _db.Orders.Update(product);
+                Orders order = _mapper.Map<Orders>(orderDto);
+                _db.Orders.Update(order);
                 _db.SaveChanges();
 
-                _response.Result = _mapper.Map<OrdersDto>(product);
+                _response.Result = _mapper.Map<OrdersDto>(order);
             }
             catch (Exception ex)
             {
