@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Customer.Data;
 using Services.Customer.Models;
 using Services.Customer.Models.Dto;
+using Services.Customer.RabbitMQSender;
 
 namespace Services.Customer.Controllers
 {
@@ -11,13 +12,17 @@ namespace Services.Customer.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly AppDbContext _db;
+        private readonly IRabbitMQCustomerMessageSender _messageSender;
+        private readonly IConfiguration _configuration;
         private ResponseDto _response;
         private IMapper _mapper;
-        public CustomerController(AppDbContext db, IMapper mapper)
+        public CustomerController(AppDbContext db, IMapper mapper, IRabbitMQCustomerMessageSender messageSender, IConfiguration configuration)
         {
             _db = db;
             _response = new ResponseDto();
             _mapper = mapper;
+            _messageSender = messageSender;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -54,38 +59,39 @@ namespace Services.Customer.Controllers
         }
 
         [HttpPost]
-        public ResponseDto Post(CustomersDto ProductDto)
+        public ResponseDto Post(CustomersDto customersDto)
         {
             try
             {
-                Customers product = _mapper.Map<Customers>(ProductDto);
-                _db.Customers.Add(product);
+                Customers customer = _mapper.Map<Customers>(customersDto);
+                _db.Customers.Add(customer);
                 _db.SaveChanges();
 
 
-                _db.Customers.Update(product);
+                _db.Customers.Update(customer);
                 _db.SaveChanges();
-                _response.Result = _mapper.Map<CustomersDto>(product);
+                _response.Result = _mapper.Map<CustomersDto>(customer);
             }
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Message = ex.Message;
             }
+            _messageSender.SendMessage(customersDto, _configuration.GetValue<string>("TopicAndQueueNames:AddCustomerQueue"));
             return _response;
         }
 
 
         [HttpPut]
-        public ResponseDto Put(CustomersDto ProductDto)
+        public ResponseDto Put(CustomersDto CustomerDto)
         {
             try
             {
-                Customers product = _mapper.Map<Customers>(ProductDto);
-                _db.Customers.Update(product);
+                Customers customer = _mapper.Map<Customers>(CustomerDto);
+                _db.Customers.Update(customer);
                 _db.SaveChanges();
 
-                _response.Result = _mapper.Map<CustomersDto>(product);
+                _response.Result = _mapper.Map<CustomersDto>(customer);
             }
             catch (Exception ex)
             {
