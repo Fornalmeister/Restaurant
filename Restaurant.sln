@@ -3,17 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{6885940A-3451-4401-83BA-D5010703B8A5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{0525953A-FBA9-47D5-B10B-5C095D38746C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Product", "Services.Product\Services.Product.csproj", "{F54CD16E-4D26-4CBD-AD01-F7876F8C4BC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Product", "Services.Product\Services.Product.csproj", "{F54CD16E-4D26-4CBD-AD01-F7876F8C4BC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Customer", "Services.Customer\Services.Customer.csproj", "{AA26773D-598B-4A1A-B0D1-870C1EC32C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Customer", "Services.Customer\Services.Customer.csproj", "{AA26773D-598B-4A1A-B0D1-870C1EC32C87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Order", "Services.Order\Services.Order.csproj", "{DE9D5F3C-B230-40B6-8793-048CD5BBF540}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Order", "Services.Order\Services.Order.csproj", "{DE9D5F3C-B230-40B6-8793-048CD5BBF540}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.OrderItem", "Services.OrderItem\Services.OrderItem.csproj", "{400CC798-94AD-46AC-AF57-248DD02C38F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.OrderItem", "Services.OrderItem\Services.OrderItem.csproj", "{400CC798-94AD-46AC-AF57-248DD02C38F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
